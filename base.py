@@ -109,7 +109,6 @@ def prod(l):
 
 print(prod([1, 2, 3]))
 
-
 def str2float(s):
     l = s.split('.')
     point = len(l[1])
@@ -118,3 +117,47 @@ def str2float(s):
     return chr2int(s) / (10 ** point)
 
 print(str2float('123.456'))
+
+#filter(func, *iterator)
+print("filter()>>>")
+#回数
+
+def ishuishu(n):
+    # 将n转为字符串，然后字符串反转并相比较，相等为回数
+    if n <= 10:
+        return 0
+    if str(n) == str(n)[::-1]:
+        return 1
+    return 0
+
+output = filter(ishuishu, range(1000, 10000))
+print(list(output))
+
+#sorted(*args, key=None, reverse=False)'key是个函数
+d = [('Bob', 75), ('Adam', 92), ('Bart', 66), ('Lisa', 88)]
+
+L2 = sorted(d, key=lambda x:x[0].lower())
+print(L2)
+
+print(sorted(d, key=lambda x:x[1], reverse=True))
+
+# 装饰器decorator
+from functools import wraps
+
+def log(text):
+    def decorator(func):
+        @wraps(func) # 使函数名保持一致
+        def wrapper(*args, **kw):
+            print('%s %s():' % (text, func.__name__))
+            return func(*args, **kw)
+        return wrapper
+    return decorator
+
+@log('excute')
+def now():
+    import time
+    print(time.localtime())
+
+now()
+#相当于 now = log('excute)(now); log('excute)返回decorator函数;decorator(now)执行函数操作
+
