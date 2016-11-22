@@ -161,3 +161,115 @@ def now():
 now()
 #相当于 now = log('excute)(now); log('excute)返回decorator函数;decorator(now)执行函数操作
 
+'''
+偏函数：将某函数的部分参数固定（非默认值）并返回该函数为基的新函数；相当于调整默认值
+from functools import partial
+'''
+from functools import partial
+def base_fun(x, y):
+    return x + y
+
+# 固定y值，构建新的函数
+y2 = partial(base_fun, y=2)
+print(y2(5)) # 5+2
+print(y2(5, y=3)) # 5+3
+
+'''
+类和实例
+'''
+print("Class type>>>>>")
+# 学生
+class Student(object):
+    __slots__ = ('name', 'age', '__score', '__papa') # 限制实例的属性可选范围;但对子类无效，即没有继承性
+    student_number = 0 # 类属性是全局的
+
+    def __init__(self, name):
+        self.name = name
+        self.__papa = None # 设置内部属性，限制外部访问
+
+    def set_papa(self, papa):
+        self.__papa = papa
+
+    def get_papa(self):
+        return self.__papa
+
+    @property
+    def score(self):
+        return self.__score
+
+    @score.setter #注意是setter，不能是其它的名称; 还有个属性是deleter, getter
+    def score(self, value):
+        if not isinstance(value, int):
+            raise ValueError('score must be an integer')
+        if value < 0 or value > 100:
+            raise ValueError('score must be between 0 ~ 100 !')
+        self.__score = value
+
+def register(name, **kw):
+    s = Student(name)
+    for k, v in kw.items():
+        setattr(s, k, v)
+    Student.student_number += 1
+    return s
+
+bob = register('Bob', score=90)
+bob.set_papa('DHQ')
+ta = register('Ta', age=25)
+
+print(hasattr(bob, 'score'))
+print(getattr(bob, 'score'))
+print(getattr(ta, 'age'))
+print(Student.student_number)
+print(bob.get_papa())
+
+# 属性装饰器@property可将类方法的调用过程隐藏并转为属性
+ta.score = 60 # ta.score.setter(60)
+print(ta.score) # ta.score.getter(60)
+
+# 特殊方法
+class Chain(object):
+    def __init__(self, path=''):
+        self._path = path
+
+    def __getattr__(self, path):
+        # getattr是动态调用的
+        print(Chain('%s/%s' % (self._path, path)))
+        return Chain('%s/%s' % (self._path, path))
+
+    def __call__(self, param):
+        # __call__直接调用实例本身（注意不是实例方法）
+        print("----call-----")
+        print(Chain('%s/%s' % (self._path, param)))
+        return Chain('%s/%s' % (self._path, param))
+
+    def __str__(self):
+        return self._path
+
+    __repr__ = __str__
+
+print(Chain().status.user.timeline.list)
+print(Chain().status.users('python').repos)
+
+'''
+枚举类：当有多个常量可归类时，可用Enum生成;常量的值默认从1开始
+from enum import Enum
+@unique装饰器可以去重
+'''
+from enum import Enum
+Month = Enum('Month', ('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'))
+
+print(Month.Jan)
+
+for name, member in Month.__members__.items():
+    print(name, '=>', member, ',', member.value)
+
+print(isinstance(Month.Jan, Month))
+print(type(Month.Jan))
+print(issubclass(Month, Enum))
+print(type(Month))
+print(Month.Feb.value)
+print(Month.Feb.name)
+print(type(1))
+
+# 元类
+# http://blog.csdn.net/weixin_35955795/article/details/52985170
