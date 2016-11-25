@@ -49,7 +49,7 @@ print(b1.read())
 # os模块是文件和目录操作的API
 import os
 print(os.name) # os Type
-if hasattr('uname', 'os'):
+if hasattr(os, 'uname'):
     # win中os没有uname方法
     print(os.uname()) # os的详细信息
 print(os.environ.get('PATH'))
