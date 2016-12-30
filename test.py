@@ -21,9 +21,6 @@ def err():
     except Exception as e:
         logging.exception(e)
 
-err()
-print('END')
-
 '''
 单元测试：以测试为驱动的开发模式
 编写单元测试，需要引入Python自带的unittest模块.
@@ -95,34 +92,30 @@ class TestDict(unittest.TestCase):
         d = Dict()
         with self.assertRaises(AttributeError):
             value = d.empty
-unittest.main()
-d = Dict()
-print(d['empty'])
 
 # 文档测试
 def fact(n):
     '''
-    Function to get n * (n - 1) * ... 2 * 1
-    simple example:
-
-    >>>fact(1)
+    >>> fact(1)
     1
-    >>>fact(3)
-    6
-    >>>fact(0)
+    >>> fact(2)
+    2
+    >>> fact(5)
+    120
+    >>> fact(0)
     Traceback (most recent call last):
-        ...
+    ...
     ValueError
     '''
-    '''
-    if n < 1:
+    if n<1:
         raise ValueError()
-    '''
-    if n == 1:
+    if n==1:
         return 1
+    return n*fact(n-1)
 
-    return n * fact(n - 1)
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     import doctest
     doctest.testmod()
+    unittest.main()
+    d = Dict()
+    print(d['empty'])

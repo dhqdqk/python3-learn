@@ -16,7 +16,7 @@ if 'pthon3-learn' not in os.path.abspath('.'):
 # IO: read and write
 with open(os.path.join(os.path.abspath('.'), 'test.py'), 'r') as f:
     for line in f.readlines():
-        print(line.strip('\n')) # remove th tail '\n' of every line
+        print(line.strip('\n')) # remove the tail '\n' of every line
 
 # stringIO：在缓存读写字符串类型数据;读写不能并存于同一对象
 from io import StringIO
@@ -43,7 +43,7 @@ print(b.read())
 print(b.tell())
 
 b1 = BytesIO(b'\xe4\xb8\xad\xe6\x96\x87')
-print(b1.read())
+print(b1.read().decode('utf-8'))
 
 # file and dir
 # os模块是文件和目录操作的API
@@ -86,9 +86,9 @@ class FindFile(object):
 
     def findfile(self, path, word):
         for x in os.listdir(path):
-            fp = os.path.join(path,x)
+            fp = os.path.join(path, x)
             if os.path.isdir(fp):
-                self.findfile(fp,word)
+                self.findfile(fp, word)
             else:
                 if word in os.path.splitext(x)[0]:
                     # 检查文件名是否包含指定字符串
@@ -98,12 +98,15 @@ class FindFile(object):
     def ls(self):
         if self.searchdir != '':
             self.findfile(self.searchdir, self.searchstr)
+        return
 
 f = FindFile('.', 'ba')
 f.ls()
 
 # pickling
 # pickle is python's own model
+# dump: python's data to pickle's data in a file; load: read data from pickle file to python data
+# dumps: python's data to pickle's data on FLASH
 d = dict(name='python', version=3.5, pickle='pickle')
 print(d)
 
@@ -123,6 +126,8 @@ with open('pdump.txt', 'rb') as f:
 print(pl)
 
 # JSON: universal standard
+# dump & load：python数据和json数据文件之间转换
+# dumps & loads：python数据和json数据格式之间转换，缓存操作
 '''
 JSON类型	    Python类型
 {}            dict
@@ -145,3 +150,8 @@ with open('jdump.txt', 'w') as f:
 
 with open('jdumps.txt', 'w') as f:
     f.write(json.dumps(j))
+
+f = open('jdump.txt', 'r')
+j1 = json.load(f)
+f.close()
+print(j1)

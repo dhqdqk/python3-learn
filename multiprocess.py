@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-## -*- coding:utf-8 -*-
+# -*- coding:utf-8 -*-
 
 '''
 一次进程(process)至少有一个线程(thread)；线程是最小的执行单元

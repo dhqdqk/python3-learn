@@ -65,6 +65,7 @@ print(L2)
 
 # generator；生成器；列表生成器()；或yield语句
 def triangles(n):
+    '杨辉三角'
     l = [1]
     j = 1
     while j <= n:
@@ -101,6 +102,8 @@ def normalize(name):
 
     return list(map(low_cap, name))
 
+print(list(i.lower().capitalize() for i in s))
+
 print(normalize(s))
 
 # 求积
@@ -110,15 +113,18 @@ def prod(l):
 print(prod([1, 2, 3]))
 
 def str2float(s):
-    l = s.split('.')
-    point = len(l[1])
-    if point > 0:
-        s = l[0] + l[1]
-    return chr2int(s) / (10 ** point)
+    if '.' in s:
+        l = s.split('.')
+        point = len(l[1])
+        if point > 0:
+            s = l[0] + l[1]
+            return chr2int(s) / (10 ** point)
+        return chr2int(l[0])
+    return chr2int(s)
 
-print(str2float('123.456'))
+print(str2float('123.'))
 
-#filter(func, *iterator)
+#filter(func, *iterator); func返回值只能0或1
 print("filter()>>>")
 #回数
 
@@ -126,14 +132,14 @@ def ishuishu(n):
     # 将n转为字符串，然后字符串反转并相比较，相等为回数
     if n <= 10:
         return 0
-    if str(n) == str(n)[::-1]:
+    if n == int(str(n)[::-1]):
         return 1
     return 0
 
 output = filter(ishuishu, range(1000, 10000))
 print(list(output))
 
-#sorted(*args, key=None, reverse=False)'key是个函数
+#sorted(*args, key=func, reverse=False)'key是个函数
 d = [('Bob', 75), ('Adam', 92), ('Bart', 66), ('Lisa', 88)]
 
 L2 = sorted(d, key=lambda x:x[0].lower())
@@ -144,6 +150,8 @@ print(sorted(d, key=lambda x:x[1], reverse=True))
 # 装饰器decorator
 from functools import wraps
 
+print("***********decorator****************")
+
 def log(text):
     def decorator(func):
         @wraps(func) # 使函数名保持一致
@@ -151,15 +159,25 @@ def log(text):
             print('%s %s():' % (text, func.__name__))
             return func(*args, **kw)
         return wrapper
+
+    @wraps(text)
+    def wrapper(*args, **kw):
+        print('%s :' % text.__name__)
+        return text(*args, **kw)
+
+    if hasattr(text, '__call__'):
+        print('it is a func called:')
+        return wrapper
     return decorator
 
-@log('excute')
+
+@log('an extra string args.')
 def now():
     import time
     print(time.localtime())
 
 now()
-#相当于 now = log('excute)(now); log('excute)返回decorator函数;decorator(now)执行函数操作
+#相当于 now = log('excute')(now); log('excute)返回decorator函数;decorator(now)执行函数操作
 
 '''
 偏函数：将某函数的部分参数固定（非默认值）并返回该函数为基的新函数；相当于调整默认值
@@ -193,7 +211,7 @@ class Student(object):
     def get_papa(self):
         return self.__papa
 
-    @property
+    @property # 相当于get_score
     def score(self):
         return self.__score
 
@@ -318,6 +336,8 @@ class ModelMetaclass(type):
             if isinstance(v, Field):
                 print('Found mapping: %s ==> %s' % (k,v ))
                 mappings[k] =v
+                print('Found mapping: %s ==> %s' % (k,v ))
+                mappings[k] =v
         for k in mappings.keys():
             attrs.pop(k)
 
@@ -367,3 +387,7 @@ u1.save()
 
 u2 = User(id=110, name='python', email='python@python.org', password='c++')
 u2.save()
+
+print(u1.id)
+u2.id = 20
+print(u2.id)
