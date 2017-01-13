@@ -10,6 +10,8 @@ asyncio是Python 3.4版本引入的标准库，直接内置了对异步IO的支�
 然后在coroutine内部用yield from调用另一个coroutine实现异步操作
 
 为了简化并更好地标识异步IO，从Python 3.5开始引入了新的语法async和await，可以让coroutine的代码更简洁易读
+
+aiohttp是py3.5添加的处理http异步调用的模块
 '''
 def consumer():
     r = ''
