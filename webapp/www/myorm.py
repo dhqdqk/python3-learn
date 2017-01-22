@@ -1,8 +1,10 @@
-#!/usr/bin/env python
+
 # coding:utf-8
 
-import logging; logging.basicConfig(level=logging.INFO)
+import logging
 import asyncio
+
+logging.basicConfig(level=logging.INFO)
 
 def log(sql, args=()):
     logging.info('SQL: %s' % sql)
@@ -196,7 +198,8 @@ class Field(object):
         return '<%s, %s: %s>' % (self.__class__.__name__, self.column_type, self.name)
 
 class StringField(Field):
-    def __init__(self, name=None, primary_key=False, default=None, column_type='varchar(100)'):
+    def __init__(self, name=None, primary_key=False, default=None, length=100):
+        column_type = 'varchar(%s)' % len
         super().__init__(name, column_type, primary_key, default)
 
 class IntegerField(Field):
@@ -210,6 +213,10 @@ class BooleanField(Field):
 class TextField(Field):
     def __init__(self, name=None, default=None):
         super().__init__(name, 'Text', False, default)
+
+class FloatField(Field):
+    def __init__(self, name=None, default=None):
+        super().__init__(name, 'float', False, default)
 
 
 if __name__ == '__main__':

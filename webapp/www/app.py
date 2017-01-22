@@ -6,7 +6,7 @@ import time
 import aiomysql
 from datetime import datetime
 from aiohttp import web
-from myorm import Model, StringField, IntegerField
+from myorm import *
 
 
 class User(Model):
