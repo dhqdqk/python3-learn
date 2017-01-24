@@ -1,8 +1,9 @@
-
+#!/usr/bin/env python3
 # coding:utf-8
 
 import logging
 import asyncio
+import aiomysql
 
 logging.basicConfig(level=logging.INFO)
 
@@ -18,7 +19,7 @@ async def create_pool(loop, **kw):
         port = kw.get('port', 3306),
         user = kw['user'],
         password = kw['password'],
-        db = kw['python3-learn'],
+        db = kw['db'],
         charset = kw.get('charset', 'utf8'),
         autocommit = kw.get('autocommit', True),
         # 最大连接数
@@ -26,6 +27,13 @@ async def create_pool(loop, **kw):
         minsize = kw.get('minsize', 1),
         loop = loop
     )
+
+async def destory_pool():
+    '使用event_loop后要销毁连接池pool'
+    global __pool
+    if __pool is not None:
+        __pool.close()
+        await __pool.wait_closed()
 
 async def select(sql, args, size=None):
     '从数据库查表的操作'
@@ -54,7 +62,8 @@ async def execute(sql, args):
         try:
             cur = await conn.cursor()
             await cur.execute(sql.replace('?', '%s'), args)
-            affected = cur.rowcount()
+            await conn.commit()
+            affected = cur.rowcount
             await cur.close()
         except BaseException as e:
             raise
@@ -162,7 +171,7 @@ class Model(dict, metaclass=ModelMetaclass):
     def getValueOrDefault(self, key):
         value = getattr(self, key, None)
         if value is None:
-            field = self.__mapping__[key]
+            field = self.__mappings__[key]
             if field.default is not None:
                 value = field.default() if callable(field.default) else field.default
                 logging.debug('using default value for %s: %s' % (key, str(value)))
@@ -180,8 +189,9 @@ class Model(dict, metaclass=ModelMetaclass):
 
     async def save(self):
         args = list(map(self.getValueOrDefault, self.__fields__))
+        logging.info('save: %s' % args)
         args.append(self.getValueOrDefault(self.__primary_key__))
-        rows = execute(self.__insert__, args)
+        rows = await execute(self.__insert__, args)
         if rows != 1:
             logging.warn('failed to insert record: affected rows: %s' % rows)
 
@@ -207,7 +217,7 @@ class IntegerField(Field):
         super().__init__(name, 'bigint', primary_key, default)
 
 class BooleanField(Field):
-    def __init__(self, name=None, default=None):
+    def __init__(self, name=None, default=False):
         super().__init__(name, 'boolean', False, default)
 
 class TextField(Field):
